@@ -8,6 +8,7 @@
 #define MATRIX_API __declspec(dllimport)   
 #endif
 
+#define WITH ->operator()
 
 namespace CryptoCPP {
 	namespace Math {
@@ -29,24 +30,26 @@ namespace CryptoCPP {
 			long long * const valueSet;
 		};
 
+
 		class DelegatingFPTR;
 		typedef const DelegatingFPTR*(Matrix::*Delegate)(const Vector & input, size_t at);
+		typedef const DelegatingFPTR*(Matrix::*PDelegate)(const Vector * input, size_t at);
 
 		class DelegatingFPTR {
 		public:
 
-			DelegatingFPTR(Delegate impl, Matrix* context);
+			DelegatingFPTR(Delegate impl, PDelegate point, Matrix* context);
 
-			MATRIX_API const DelegatingFPTR* operator()(const Vector & input, size_t index);
+			MATRIX_API const DelegatingFPTR* operator()(const Vector & input, size_t index) const;
+			MATRIX_API const DelegatingFPTR* operator()(Vector * input, size_t index) const;
 		protected:
 			Delegate impl;
+			PDelegate point;
 			Matrix* context;
 		};
 
 		class Matrix
 		{
-			friend class Vector;
-			friend class DelegatingFPTR;
 		public:
 			MATRIX_API Matrix(size_t height, size_t width);
 			MATRIX_API Matrix(const Matrix & copy);
@@ -54,6 +57,13 @@ namespace CryptoCPP {
 
 			MATRIX_API const DelegatingFPTR* set_row(const Vector & row, size_t rowidx);
 			MATRIX_API const DelegatingFPTR* set_col(const Vector & col, size_t colidx);
+			MATRIX_API const DelegatingFPTR* set_row(Vector * row, size_t rowidx);
+			MATRIX_API const DelegatingFPTR* set_col(Vector * col, size_t colidx);
+
+			MATRIX_API const DelegatingFPTR* set_row_r(const Vector & row, size_t rowidx);
+			MATRIX_API const DelegatingFPTR* set_col_r(const Vector & col, size_t colidx);
+			MATRIX_API const DelegatingFPTR* set_row_p(Vector * row, size_t rowidx);
+			MATRIX_API const DelegatingFPTR* set_col_p(Vector * col, size_t colidx);
 			MATRIX_API long long set_at(size_t col, size_t row, long long value);
 			MATRIX_API long long set_at(size_t index, bool rowMajor, long long value);
 
@@ -65,12 +75,16 @@ namespace CryptoCPP {
 			MATRIX_API Matrix* mul(const Matrix & factor) const;
 			MATRIX_API Matrix* mul(long long scalar) const;
 
+			MATRIX_API Matrix* operator*(const Matrix & factor) const;
+			MATRIX_API Matrix* operator*(const Matrix * factor) const;
+			MATRIX_API Matrix* operator*(long long scalar) const;
+
 			MATRIX_API Matrix* minor(size_t row, size_t col) const;
 			MATRIX_API long long det() const;
 
 		protected:
-			const DelegatingFPTR* ar = new DelegatingFPTR(add_row, this);
-			const DelegatingFPTR* ac = new DelegatingFPTR(add_col, this);
+			const DelegatingFPTR* ar = new DelegatingFPTR((Delegate)&Matrix::set_row_r, (PDelegate)&Matrix::set_row_p, this);
+			const DelegatingFPTR* ac = new DelegatingFPTR((Delegate)&Matrix::set_col_r, (PDelegate)&Matrix::set_col_p, this);
 			Vector * * const columns;
 			const size_t height;
 			const size_t width;
