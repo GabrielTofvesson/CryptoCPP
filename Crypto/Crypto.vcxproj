@@ -77,6 +77,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\Lenovo\source\repos\Crypto\XMath;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -117,6 +118,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Start.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\XMath\XMath.vcxproj">
+      <Project>{5f9ad03f-b1f0-4db3-b39a-49b66895774c}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
