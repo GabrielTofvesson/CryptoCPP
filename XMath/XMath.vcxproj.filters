@@ -23,5 +23,14 @@
     <ClInclude Include="BigInteger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Matrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Galois.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Primes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

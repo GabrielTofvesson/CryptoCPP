@@ -116,6 +116,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BigInteger.h" />
+    <ClInclude Include="Galois.h" />
+    <ClInclude Include="Matrix.h" />
+    <ClInclude Include="Primes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BigInteger.cpp" />
