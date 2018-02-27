@@ -2,14 +2,15 @@
 
 #include "BigInteger.h"
 
+
 namespace CryptoCPP {
 	namespace Math {
-		BIGINT_API BigInteger::BigInteger(int64_t initialValue)
+		BIGINT_API BigInteger::BigInteger(long long initialValue)
 		{
 			data = new std::vector<BYTE>();
 
 			// We know how big this should be and we know the size won't change
-			static const size_t bytes = sizeof(int64_t);
+			static const size_t bytes = sizeof(initialValue);
 			for (size_t t = 0; t < bytes; ++t) data->push_back((initialValue >> (t * 8)) & 255);
 
 			sign = false;
@@ -93,14 +94,14 @@ namespace CryptoCPP {
 			return create;
 		}
 
-		BIGINT_API BigInteger * BigInteger::operator<<(uint64_t shiftcount) const
+		BIGINT_API BigInteger * BigInteger::operator<<(size_t shiftcount) const
 		{
 			BigInteger* create = new BigInteger(*this);
 			create->ishl(shiftcount);
 			return create;
 		}
 
-		BIGINT_API BigInteger * BigInteger::operator>>(uint64_t shiftcount) const
+		BIGINT_API BigInteger * BigInteger::operator>>(size_t shiftcount) const
 		{
 			BigInteger* create = new BigInteger(*this);
 			create->ishr(shiftcount);
@@ -157,13 +158,13 @@ namespace CryptoCPP {
 			return this;
 		}
 
-		BIGINT_API BigInteger* BigInteger::operator<<=(uint64_t shiftcount)
+		BIGINT_API BigInteger* BigInteger::operator<<=(size_t shiftcount)
 		{
 			ishl(shiftcount);
 			return this;
 		}
 
-		BIGINT_API BigInteger* BigInteger::operator>>=(uint64_t shiftcount)
+		BIGINT_API BigInteger* BigInteger::operator>>=(size_t shiftcount)
 		{
 			ishr(shiftcount);
 			return this;
@@ -338,7 +339,7 @@ namespace CryptoCPP {
 
 		BIGINT_API BigInteger* BigInteger::idiv(const BigInteger & val, bool swaptarget)
 		{
-			if (val.is_zero()) throw new std::exception("Divide by zero!");
+			if (val.is_zero()) throw new std::exception(); // Divide by zero!
 			BigInteger* rem = new BigInteger(0);
 			BigInteger quot = BigInteger(0);
 
@@ -403,7 +404,7 @@ namespace CryptoCPP {
 			for (size_t t = 0; t < data->size(); ++t) (*data)[t] = ~(*data)[t];
 		}
 
-		BIGINT_API void BigInteger::ishl(uint64_t shift)
+		BIGINT_API void BigInteger::ishl(size_t shift)
 		{
 			size_t set = shift / 8;
 			char sub = shift % 8;
@@ -430,7 +431,7 @@ namespace CryptoCPP {
 			clip_zeroes();
 		}
 
-		BIGINT_API void BigInteger::ishr(uint64_t shift)
+		BIGINT_API void BigInteger::ishr(size_t shift)
 		{
 			size_t offset = shift / 8;
 			char sub = shift % 8;
@@ -491,10 +492,10 @@ namespace CryptoCPP {
 			return ((l1 > l2 && (!sign == grt)) || ((sign == grt) && l1 < l2)) ? 1 : 0;
 		}
 
-		BIGINT_API char BigInteger::shift_mask(int64_t shift, bool left)
+		BIGINT_API char BigInteger::shift_mask(size_t shift, bool left)
 		{
 			BYTE res = 0;
-			for (uint64_t i = shift; i > 0; --i) res = left ? (res >> 1) | 128 : (res << 1) | 1;
+			for (size_t i = shift; i > 0; --i) res = left ? (res >> 1) | 128 : (res << 1) | 1;
 			return res;
 		}
 
@@ -548,3 +549,4 @@ namespace CryptoCPP {
 
 	}
 }
+
