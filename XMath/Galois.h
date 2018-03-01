@@ -25,12 +25,12 @@ namespace CryptoCPP {
 		{
 		public:
 			GALOIS_API Galois(
-					size_t characteristic,
-					size_t exponent,
-					size_t * irreducible,
-					size_t irreducible_size,
-					size_t * value
-					);
+				size_t characteristic,
+				size_t exponent,
+				size_t * irreducible,
+				size_t irreducible_size,
+				size_t * value
+				);
 			GALOIS_API ~Galois();
 
 			// Addition
@@ -43,31 +43,35 @@ namespace CryptoCPP {
 			GALOIS_API Galois * mul(const Galois * value) const;
 
 			// Inverse multiplication
-			GALOIS_API Galois * inv(const Galois * value) const;
+			GALOIS_API Galois * inv() const;
 
 
 		protected:
 			static const size_t high_bit = 1 << ((sizeof(size_t)*8)-1);
 			// GF parameters
-			const size_t characteristic, exponent, irreducible;
+			size_t characteristic, exponent, *irreducible, irreducible_size;
 			// Effective storage params
-			const size_t binary_block_size, data_size;
+			size_t binary_block_size, data_size;
 			// Value of this GF object
-			const size_t * data;
+			size_t * data;
 
 
 			// Reduce the value of this galois to fit characteristic
 			GALOIS_API void reduce();
 
-			// Self-mutable operations
-			GALOIS_API void iadd(const Galois * value);
-			GALOIS_API void isub(const Galois * value);
-			GALOIS_API void imul(const Galois * value);
-			GALOIS_API void iinv(const Galois * value);
 
-			GALOIS_API size_t _mask(size_t bits, bool side) const;
-			GALOIS_API size_t get_value(size_t idx) const;
-			GALOIS_API void set_value(size_t idx, size_t value);
+			// Logic
+			GALOIS_API static void iadd(size_t * data, size_t data_size, size_t bin_size, size_t * state, size_t state_size, size_t characteristic);	// Addition
+			GALOIS_API static void isub(size_t * data, size_t data_size, size_t bin_size, size_t * state, size_t state_size, size_t characteristic);	// Subtraction
+			GALOIS_API static void imul(size_t * data, size_t data_size, size_t bin_size, size_t * state, size_t state_size, size_t characteristic, size_t high1, size_t high2);	// Multiplication
+			GALOIS_API static void iinv(size_t * state, size_t state_size);							// Multiplicative inverse
+			GALOIS_API static void ilsh(size_t * state, size_t state_size, size_t bin_size, size_t characteristic, size_t shiftc);			// Left shift
+
+			// Data management. Don't look at these unless you want a headache
+			GALOIS_API static size_t _mask(size_t bits, bool side);
+			GALOIS_API static size_t get_value(size_t idx, size_t block_size, size_t * from);
+			GALOIS_API static void set_value(size_t idx, size_t value, size_t block_size, size_t characteristic, size_t * to);
+			GALOIS_API static size_t high_factor(size_t * state, size_t state_size, size_t bin_size, bool * noBits);
 		};
 	}
 }
