@@ -2,6 +2,7 @@
 
 #include "Galois.h"
 #include <string.h>
+#include <vector>
 
 namespace CryptoCPP{
 	namespace Math{
@@ -105,7 +106,12 @@ namespace CryptoCPP{
 
 		GALOIS_API Galois * Galois::inv() const
 		{
+			size_t * compute = new size_t[exponent+1];
+			memset(compute, 0, (exponent + 1) * sizeof(size_t));
 
+			std::vector<size_t*> factors = new std::vector<size_t*>();
+
+			// TODO: Implement extended Euclidean algorithm
 		}
 
 		// These internal functions assume that an adequate state size has been chose
