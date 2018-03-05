@@ -77,7 +77,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Lenovo\source\repos\Crypto\XMath;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)AES;$(SolutionDir)XMath;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -120,6 +120,9 @@
     <ClCompile Include="Start.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AES\AES.vcxproj">
+      <Project>{e1176bbf-344b-4041-ab24-a7109e969339}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\XMath\XMath.vcxproj">
       <Project>{5f9ad03f-b1f0-4db3-b39a-49b66895774c}</Project>
     </ProjectReference>
