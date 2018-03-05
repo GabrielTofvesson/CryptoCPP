@@ -248,6 +248,20 @@ namespace CryptoCPP{
 			return new Galois(characteristic, (BLOCK*)do_copy(irreducible, irreducible_size * sizeof(BLOCK)), irreducible_size, result, result_size);
 		}
 
+
+		GALOIS_API BLOCK * Galois::to_array(size_t * size)
+		{
+			BLOCK * b = new BLOCK[data_size];
+			memcpy(b, data, data_size);
+			if(size!=0) *size = data_size;
+			return b;
+		}
+
+		GALOIS_API BLOCK Galois::get_lowest()
+		{
+			return data_size == 0 ? 0 : data[0];
+		}
+
 		// These internal functions assume that an adequate state size has been chose
 		GALOIS_API void Galois::iadd(BLOCK * data, size_t data_size, size_t bin_size, BLOCK * state, size_t state_size, BLOCK characteristic)
 		{

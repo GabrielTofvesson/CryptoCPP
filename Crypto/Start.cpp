@@ -2,6 +2,7 @@
 #include "BigInteger.h"
 #include "Matrix.h"
 #include "Galois.h"
+#include "AES.h"
 
 using namespace CryptoCPP::Math;
 

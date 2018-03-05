@@ -53,6 +53,10 @@ namespace CryptoCPP {
 			// Inverse multiplication
 			GALOIS_API Galois * inv() const;
 
+			// Get internal value
+			GALOIS_API BLOCK * to_array(size_t * size = 0);
+			GALOIS_API BLOCK get_lowest();
+
 		protected:
 			static const BLOCK high_bit = 1 << ((sizeof(BLOCK) * 8) - 1);
 			// GF parameters & value
