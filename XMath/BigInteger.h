@@ -30,6 +30,7 @@ namespace CryptoCPP {
 		public:
 			BIGINT_API BigInteger(long long initialValue);
 			BIGINT_API BigInteger(const BigInteger& initialvalue);
+			BIGINT_API BigInteger(const char * value, size_t size);
 
 			// These should just create a new bigint and call the internal functions on it
 			BIGINT_API BigInteger* operator+(const BigInteger& val) const;
@@ -63,6 +64,9 @@ namespace CryptoCPP {
 			BIGINT_API bool operator!=(const BigInteger& val) const;
 
 			BIGINT_API char* toString();
+
+
+			BIGINT_API static BigInteger* mod_pow(BigInteger* base, BigInteger* exp, BigInteger* mod);
 
 		protected:
 			std::vector<BYTE>* data;

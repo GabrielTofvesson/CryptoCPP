@@ -31,6 +31,15 @@ namespace CryptoCPP {
 			sign = initialvalue.sign;
 		}
 
+		BIGINT_API BigInteger::BigInteger(const char * value, size_t size)
+		{
+			sign = value[size - 1] & 128;
+			data = new std::vector<BYTE>(size);
+			for (size_t t = 0; t < size; ++t) (*data)[t] = value[t];
+			clip_zeroes();
+		}
+
+
 		BIGINT_API BigInteger * BigInteger::operator+(const BigInteger & val) const
 		{
 			BigInteger* create = new BigInteger(*this);
@@ -216,6 +225,41 @@ namespace CryptoCPP {
 				string[(data->size() - 1 - t) * 2 + 2] = (data->at(t) >> 4) + ((data->at(t) >> 4) > 9 ? 87 : 48);
 			}
 			return string;
+		}
+
+		BIGINT_API BigInteger* BigInteger::mod_pow(BigInteger* base, BigInteger* exp, BigInteger* mod)
+		{
+			// Declare new versions that we can manipulate to our heart's content
+			BigInteger * b = new BigInteger(base);
+			BigInteger * e = new BigInteger(exp);
+			BigInteger * m = new BigInteger(mod);
+			
+			// Allocate a result
+			BigInteger * res = new BigInteger(1);
+			b->imod(*m, false);
+
+			bool r, hb;
+			while (*exp > 0) // As long as e has bits
+			{
+				r = !exp->lowest_set_bit(&hb); // Check if the lowest bit is set
+				e->ishr(1); // Shift all the bits to the right by one step, effectively deleting the lowest bit
+				if (r) // Do some magic here
+				{
+					res->imul(*b, false);
+					res->imod(*m, false);
+				}
+				
+				// Magic here too
+				b->imul(*b, false);
+				b->imod(*m, false);
+			}
+
+			// Remember to clean up after ourselves
+			delete m;
+			delete e;
+			delete b;
+
+			return res;
 		}
 
 
