@@ -230,9 +230,9 @@ namespace CryptoCPP {
 		BIGINT_API BigInteger* BigInteger::mod_pow(BigInteger* base, BigInteger* exp, BigInteger* mod)
 		{
 			// Declare new versions that we can manipulate to our heart's content
-			BigInteger * b = new BigInteger(base);
-			BigInteger * e = new BigInteger(exp);
-			BigInteger * m = new BigInteger(mod);
+			BigInteger * b = new BigInteger(*base);
+			BigInteger * e = new BigInteger(*exp);
+			BigInteger * m = new BigInteger(*mod);
 			
 			// Allocate a result
 			BigInteger * res = new BigInteger(1);
