@@ -1,10 +1,12 @@
 #pragma once
 
 #include <vector>
+#include <tuple>
 
 #if defined(__MINGW32__) || defined(_WIN32)
 
 #if defined(BIGINT_API)
+#undef BIGINT_API
 #define BIGINT_API __declspec(dllexport)
 #else
 #define BIGINT_API __declspec(dllimport)
@@ -31,6 +33,7 @@ namespace CryptoCPP {
 			BIGINT_API BigInteger(long long initialValue);
 			BIGINT_API BigInteger(const BigInteger& initialvalue);
 			BIGINT_API BigInteger(const char * value, size_t size);
+			BIGINT_API ~BigInteger();
 
 			// These should just create a new bigint and call the internal functions on it
 			BIGINT_API BigInteger* operator+(const BigInteger& val) const;
@@ -63,10 +66,19 @@ namespace CryptoCPP {
 			BIGINT_API bool operator==(const BigInteger& val) const;
 			BIGINT_API bool operator!=(const BigInteger& val) const;
 
-			BIGINT_API char* toString();
+			BIGINT_API BigInteger * pow(const size_t exp) const;
+			BIGINT_API BigInteger * pow(const BigInteger & exp) const;
 
+			BIGINT_API char lowest() const;
+			BIGINT_API char highest_nonzero() const;
+			BIGINT_API size_t highest_nonzero_index() const;
+			BIGINT_API char* to_array(size_t * size_out) const;
+			BIGINT_API char* to_string() const;
 
-			BIGINT_API static BigInteger* mod_pow(BigInteger* base, BigInteger* exp, BigInteger* mod);
+			BIGINT_API static BigInteger* mul_inv(const BigInteger & v1, const BigInteger & v2);
+			BIGINT_API static BigInteger* mod_pow(const BigInteger* base, const BigInteger* exp, const BigInteger* mod);
+			BIGINT_API static BigInteger* mod_pow(const BigInteger & base, const BigInteger & exp, const BigInteger & mod);
+			BIGINT_API static BigInteger* gcd(const BigInteger* i1, const BigInteger* i2);
 
 		protected:
 			std::vector<BYTE>* data;

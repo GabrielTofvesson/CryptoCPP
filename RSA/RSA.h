@@ -34,32 +34,36 @@ namespace CryptoCPP { namespace RSA {
 		PublicKey * pub;
 		PrivateKey * priv;
 	};
+	struct CipherData {
+		char* data;
+		size_t size;
+	};
 	
 	class RSA
 	{
 	public:
 		RSA_API RSA(KeyPair* pair);
+		RSA_API ~RSA();
 		
-		RSA_API char* encrypt(char* message);	// Encrypt with public key
-		RSA_API char* sign(char* message);		// Encrypt with private key
+		RSA_API CipherData* encrypt(CipherData* data);		// Encrypt with public key
+		RSA_API CipherData* sign(CipherData* data);			// Encrypt with private key
 
-		RSA_API char* decrypt(char* cipher);	// Decrypt with private key
-		RSA_API char* check_sign(char* cipher);	// Decrypt with public key
+		RSA_API CipherData* decrypt(CipherData* data);		// Decrypt with private key
+		RSA_API CipherData* check_sign(CipherData* data);	// Decrypt with public key
 
-		RSA_API bool can_decrypt();				// Checks whether or not we have a private key
+		RSA_API bool can_decrypt();							// Checks whether or not we have a private key
 
-		RSA_API char* serialize_net();			// Serializes public key
-		RSA_API char* serialize_all();			// Complete serialization (public + private key). NOTE: Should NEVER be transmitted over an insecure channel. This should preferably be kept to the local file system
+		RSA_API CipherData* serialize_net();				// Serializes public key
+		RSA_API CipherData* serialize_all();				// Complete serialization (public + private key). NOTE: Should NEVER be transmitted over an insecure channel. This should preferably be kept to the local file system
 
-		RSA_API static RSA * deserialize(char* ser);// Deserializes a serialized RSA object. Autodetects whether or not a private key is available
+		RSA_API static RSA * deserialize(CipherData* ser);	// Deserializes a serialized RSA object. Autodetects whether or not a private key is available
 
 	protected:
 		KeyPair * keypair;
 
-		RSA_API static char* encrypt(char* message, Math::BigInteger * exp, Math::BigInteger * mod); // Internal encryption function. exp can be either public or private exponent
-		RSA_API static char* decrypt(char* message, Math::BigInteger * exp, Math::BigInteger * mod); // Internal decryption function. -||-
+		RSA_API static CipherData* crypto_compute(CipherData* data, Math::BigInteger * exp, Math::BigInteger * mod); // Since the encryption/decryption is symmetric (operation-wise), the operation is generalized here
 	};
 
 	typedef char(*RandomProvider)();
-	KeyPair* generate_key_pair(RandomProvider provider, size_t approximate_byte_count, size_t byte_margin);
+	RSA_API KeyPair* generate_key_pair(RandomProvider provider, size_t approximate_byte_count, size_t byte_margin, size_t certainty);
 }}

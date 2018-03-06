@@ -5,6 +5,8 @@
 
 namespace CryptoCPP {
 	namespace Math {
+		const BigInteger * one = new BigInteger(1);
+
 		BIGINT_API BigInteger::BigInteger(long long initialValue)
 		{
 			data = new std::vector<BYTE>();
@@ -37,6 +39,11 @@ namespace CryptoCPP {
 			data = new std::vector<BYTE>(size);
 			for (size_t t = 0; t < size; ++t) (*data)[t] = value[t];
 			clip_zeroes();
+		}
+
+		BIGINT_API BigInteger::~BigInteger()
+		{
+			delete data;
 		}
 
 
@@ -213,21 +220,123 @@ namespace CryptoCPP {
 			return !(*this == val);
 		}
 
-
-		BIGINT_API char* BigInteger::toString()
+		BIGINT_API BigInteger * BigInteger::pow(const size_t exp) const
 		{
-			char* string = new char[data->size() * 2 + 3];
+			BigInteger * res = new BigInteger(*this);
+			for (size_t t = 0; t < exp; ++t) res->imul(*this, false);
+			return res;
+		}
+
+		BIGINT_API BigInteger * BigInteger::pow(const BigInteger & exp) const
+		{
+			BigInteger * res = new BigInteger(*this);
+			for (BigInteger expcpy = BigInteger(exp); expcpy > 0; expcpy.isub(*one, false)) res->imul(*this, false);
+			return res;
+		}
+
+		BIGINT_API char BigInteger::lowest() const
+		{
+			return data->size() == 0 ? 0 : (*data)[0];
+		}
+
+		BIGINT_API char BigInteger::highest_nonzero() const
+		{
+			return (*data)[highest_nonzero_index()];
+		}
+
+		BIGINT_API size_t BigInteger::highest_nonzero_index() const
+		{
+			size_t highest_non_zero = 0;
+			for (size_t t = data->size(); t>0; --t)
+				if ((*data)[t])
+				{
+					highest_non_zero = t - 1;
+					break;
+				}
+			return highest_non_zero;
+		}
+
+		BIGINT_API char* BigInteger::to_array(size_t * size_out) const
+		{
+			size_t highest_non_zero;
+			for(size_t t = data->size(); t>0; --t)
+				if ((*data)[t])
+				{
+					highest_non_zero = t;
+					break;
+				}
+			if (!highest_non_zero) highest_non_zero = 1;
+			char* result = new char[highest_non_zero];
+			memcpy(result, &data[0], highest_non_zero);
+			*size_out = data->size();
+			return result;
+		}
+
+		BIGINT_API char* BigInteger::to_string() const
+		{
+			size_t highest_non_zero;
+			for (size_t t = data->size(); t>0; --t)
+				if ((*data)[t])
+				{
+					highest_non_zero = t;
+					break;
+				}
+			if (!highest_non_zero) highest_non_zero = 1;
+			char* string = new char[highest_non_zero * 2 + 3];
 			string[0] = '0';
 			string[1] = 'x';
 			string[data->size() * 2 + 2] = 0;
-			for (size_t t = 0; t < data->size(); ++t) {
-				string[(data->size() - 1 - t) * 2 + 3] = (data->at(t) & 15) + ((data->at(t) & 15) > 9 ? 87 : 48);
-				string[(data->size() - 1 - t) * 2 + 2] = (data->at(t) >> 4) + ((data->at(t) >> 4) > 9 ? 87 : 48);
+			for (size_t t = 0; t < highest_non_zero; ++t) {
+				string[(highest_non_zero - 1 - t) * 2 + 3] = (data->at(t) & 15) + ((data->at(t) & 15) > 9 ? 87 : 48);
+				string[(highest_non_zero - 1 - t) * 2 + 2] = (data->at(t) >> 4) + ((data->at(t) >> 4) > 9 ? 87 : 48);
 			}
 			return string;
 		}
 
-		BIGINT_API BigInteger* BigInteger::mod_pow(BigInteger* base, BigInteger* exp, BigInteger* mod)
+		BIGINT_API BigInteger* BigInteger::mul_inv(const BigInteger & i1, const BigInteger & i2)
+		{
+			BigInteger * v1 = (BigInteger*)&i1, *v2 = (BigInteger*)&i2;
+			std::vector<BigInteger*> muls = std::vector<BigInteger*>();
+
+			BigInteger * mod;
+		Loop:
+			mod = *v1 % *v2;
+			if (*mod == 0) goto EndLoop;
+			if (v1 != &i1 && v1 != &i2) delete v1;
+			v1 = v2;
+			v2 = mod;
+			muls.push_back(*v1 / *v2);
+			goto Loop;
+
+		EndLoop:
+			delete mod;
+			if (v1 != &i1 && v1 != &i2) delete v1;
+			if (v2 != &i2) delete v2;;
+
+			BigInteger * left = new BigInteger(1);
+			BigInteger * right = *muls.at(muls.size() - 1) * (-1);
+			delete muls.at(muls.size() - 1);
+			muls.pop_back();
+
+			while (muls.size() > 0) {
+				BigInteger * pop = *muls.at(muls.size() - 1) * (-1);
+				delete muls.at(muls.size() - 1);
+				muls.pop_back();
+
+				BigInteger * combine = (*right * *pop);
+				delete pop;
+				pop = *left + *combine;
+				delete combine;
+
+				delete left;
+				left = right;
+				right = pop;
+			}
+			delete right;
+			return left;
+		}
+
+		BIGINT_API BigInteger* BigInteger::mod_pow(const BigInteger* base, const BigInteger* exp, const BigInteger* mod)
 		{
 			// Declare new versions that we can manipulate to our heart's content
 			BigInteger * b = new BigInteger(*base);
@@ -245,13 +354,13 @@ namespace CryptoCPP {
 				e->ishr(1); // Shift all the bits to the right by one step, effectively deleting the lowest bit
 				if (r) // Do some magic here
 				{
-					res->imul(*b, false);
-					res->imod(*m, false);
+					res->imul(*b, false); // Multiply result by b
+					res->imod(*m, false); // Perform modulus by m
 				}
 				
 				// Magic here too
-				b->imul(*b, false);
-				b->imod(*m, false);
+				b->imul(*b, false); // Square b
+				b->imod(*m, false); // Reduce mod m
 			}
 
 			// Remember to clean up after ourselves
@@ -261,6 +370,31 @@ namespace CryptoCPP {
 
 			return res;
 		}
+
+		BIGINT_API BigInteger* BigInteger::mod_pow(const BigInteger & base, const BigInteger & exp, const BigInteger & mod)
+		{
+			return mod_pow(&base, &exp, &mod);
+		}
+
+		BIGINT_API BigInteger* BigInteger::gcd(const BigInteger* i1, const BigInteger* i2)
+		{
+			BigInteger * v1 = (BigInteger*)i1, *v2 = (BigInteger*)i2;
+
+			BigInteger * mod;
+		Loop:
+			mod = *v1 % *v2;
+			if (*mod == 0) goto EndLoop;
+			if (v1 != i1 && v1 != i2) delete v1;
+			v1 = v2;
+			v2 = mod;
+			goto Loop;
+
+		EndLoop:
+			delete mod;
+			if (v1 != i1 && v1 != i2) delete v1;
+			return v2;
+		}
+
 
 
 		BIGINT_API void BigInteger::iadd(const BigInteger & other, bool swaptarget)

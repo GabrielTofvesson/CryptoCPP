@@ -22,8 +22,7 @@ Dependencies:
 ### RSA
 Small RSA implementation with key generation delegated partially to XMath. The implementation supports message signing, seralization and deserialization.
 Status:
-* Headers: Implemented
-* Code: Not implemented
+* Implemented
 
 Dependencies:
 * XMath
@@ -44,7 +43,7 @@ Status:
 * BigInteger: Implemented
 * Galois Implemented
 * Matrix Implemented
-* Primes: Not implemented
+* Primes: Implemented
 
 Dependencies:
 None

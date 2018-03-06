@@ -124,6 +124,7 @@
     <ClCompile Include="BigInteger.cpp" />
     <ClCompile Include="Galois.cpp" />
     <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="Primes.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

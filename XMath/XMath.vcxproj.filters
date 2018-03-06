@@ -24,6 +24,9 @@
     <ClCompile Include="Galois.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Primes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BigInteger.h">
